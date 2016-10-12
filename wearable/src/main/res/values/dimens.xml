@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="date_text_size">16sp</dimen>
+    <dimen name="hour_min_collon_text_size">50sp</dimen>
+    <dimen name="seconds_text_size">20sp</dimen>
+    <dimen name="hi_low_title_size">12sp</dimen>
+</resources>

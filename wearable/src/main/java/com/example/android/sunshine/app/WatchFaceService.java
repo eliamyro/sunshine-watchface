@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -39,7 +40,7 @@ public class WatchFaceService extends CanvasWatchFaceService {
     private TextView hoursTextView;
     private TextView minutesTextView;
     private TextView secondsTextView;
-    private RelativeLayout topLayout;
+    private LinearLayout topLayout;
     private LinearLayout bottomLayout;
     private ImageView weatherIcon;
 
@@ -141,7 +142,7 @@ public class WatchFaceService extends CanvasWatchFaceService {
             hoursTextView = (TextView) myLayout.findViewById(R.id.hours_text_view);
             minutesTextView = (TextView) myLayout.findViewById(R.id.minutes_text_view);
             secondsTextView = (TextView) myLayout.findViewById(R.id.seconds_text_view);
-            topLayout = (RelativeLayout) myLayout.findViewById(R.id.top_layout);
+            topLayout = (LinearLayout) myLayout.findViewById(R.id.top_layout);
             bottomLayout = (LinearLayout) myLayout.findViewById(R.id.bottom_layout);
             weatherIcon = (ImageView) myLayout.findViewById(R.id.weather_icon);
 
@@ -192,12 +193,15 @@ public class WatchFaceService extends CanvasWatchFaceService {
             // Get the curent time
             time = new Date();
             gc.setTime(time);
+
+            String date = new SimpleDateFormat("dd MMM", Locale.getDefault()).format(time);
+
             String day = gc.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault());
-            String hour = String.valueOf(gc.get(Calendar.HOUR_OF_DAY));
+            String hour = String.valueOf(String.format("%02d",gc.get(Calendar.HOUR_OF_DAY)));
             String minute = String.valueOf(String.format("%02d", gc.get(Calendar.MINUTE)));
             String second = String.valueOf(String.format("%02d", gc.get(Calendar.SECOND)));
 
-            dateTextView.setText(day);
+            dateTextView.setText(day + " " + date);
             hoursTextView.setText(hour);
             minutesTextView.setText(minute);
             secondsTextView.setText(second);
