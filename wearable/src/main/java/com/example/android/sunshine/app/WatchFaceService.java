@@ -78,9 +78,6 @@ public class WatchFaceService extends CanvasWatchFaceService implements GoogleAp
     private String highTemp;
     private String lowTemp;
     private int humidity;
-    float mXOffset = 0;
-    float mYOffset = 0;
-
 
     @Override
     public Engine onCreateEngine() {
@@ -361,7 +358,6 @@ public class WatchFaceService extends CanvasWatchFaceService implements GoogleAp
             myLayout.layout(0, 0, myLayout.getMeasuredWidth(), myLayout.getMeasuredHeight());
 
             // Draw it to the Canvas
-//            canvas.translate(mXOffset, mYOffset);
             myLayout.draw(canvas);
         }
 
