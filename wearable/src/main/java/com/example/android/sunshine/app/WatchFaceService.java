@@ -12,14 +12,11 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.renderscript.Element;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
-import android.text.format.DateFormat;
-import android.util.EventLog;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -81,6 +78,8 @@ public class WatchFaceService extends CanvasWatchFaceService implements GoogleAp
     private String highTemp;
     private String lowTemp;
     private int humidity;
+    float mXOffset = 0;
+    float mYOffset = 0;
 
 
     @Override
@@ -107,10 +106,10 @@ public class WatchFaceService extends CanvasWatchFaceService implements GoogleAp
 
     @Override
     public void onDataChanged(DataEventBuffer dataEventBuffer) {
-        for (DataEvent event : dataEventBuffer){
-            if (event.getType() == DataEvent.TYPE_CHANGED){
+        for (DataEvent event : dataEventBuffer) {
+            if (event.getType() == DataEvent.TYPE_CHANGED) {
                 DataItem item = event.getDataItem();
-                if (item.getUri().getPath().equals("/weather_path")){
+                if (item.getUri().getPath().equals("/weather_path")) {
                     DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
                     weatherId = dataMap.getInt("weather_id");
                     highTemp = dataMap.getString("hi_temp");
@@ -138,9 +137,6 @@ public class WatchFaceService extends CanvasWatchFaceService implements GoogleAp
         Date mDate;
         SimpleDateFormat mDateFormat;
         boolean mAmbient;
-
-        float mXOffset = 0;
-        float mYOffset = 0;
 
         private int specW, specH;
         private View myLayout;
@@ -217,6 +213,22 @@ public class WatchFaceService extends CanvasWatchFaceService implements GoogleAp
                     .getDefaultDisplay();
             display.getSize(displaySize);
 
+            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            myLayout = inflater.inflate(R.layout.activity_main, null);
+
+            dateTextView = (TextView) myLayout.findViewById(R.id.date_text_view);
+            hoursTextView = (TextView) myLayout.findViewById(R.id.hours_text_view);
+            minutesTextView = (TextView) myLayout.findViewById(R.id.minutes_text_view);
+            secondsTextView = (TextView) myLayout.findViewById(R.id.seconds_text_view);
+            topLayout = (LinearLayout) myLayout.findViewById(R.id.top_layout);
+            bottomLayout = (LinearLayout) myLayout.findViewById(R.id.bottom_layout);
+            weatherIcon = (ImageView) myLayout.findViewById(R.id.weather_icon);
+            hiTempLabelTextView = (TextView) myLayout.findViewById(R.id.hi_temp_label);
+            lowTempLabelTextView = (TextView) myLayout.findViewById(R.id.low_temp_label);
+            hiTempTextView = (TextView) myLayout.findViewById(R.id.hi_temp_text_view);
+            lowTempTextView = (TextView) myLayout.findViewById(R.id.low_temp_text_view);
+            humidityTextView = (TextView) myLayout.findViewById(R.id.humidity_text_view);
+
 
         }
 
@@ -224,6 +236,7 @@ public class WatchFaceService extends CanvasWatchFaceService implements GoogleAp
             mDateFormat = new SimpleDateFormat("dd MMM", Locale.getDefault());
             mDateFormat.setCalendar(mCalendar);
         }
+
         @Override
         public void onDestroy() {
             mUpdateTimeHandler.removeMessages(MSG_UPDATE_TIME);
@@ -252,29 +265,6 @@ public class WatchFaceService extends CanvasWatchFaceService implements GoogleAp
         @Override
         public void onApplyWindowInsets(WindowInsets insets) {
             super.onApplyWindowInsets(insets);
-
-            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-            if (insets.isRound()) {
-                // Inflate the layout that we're using for the watch face
-                myLayout = inflater.inflate(R.layout.round_activity_main, null);
-            } else {
-                myLayout = inflater.inflate(R.layout.rect_activity_main, null);
-            }
-
-            dateTextView = (TextView) myLayout.findViewById(R.id.date_text_view);
-            hoursTextView = (TextView) myLayout.findViewById(R.id.hours_text_view);
-            minutesTextView = (TextView) myLayout.findViewById(R.id.minutes_text_view);
-            secondsTextView = (TextView) myLayout.findViewById(R.id.seconds_text_view);
-            topLayout = (LinearLayout) myLayout.findViewById(R.id.top_layout);
-            bottomLayout = (LinearLayout) myLayout.findViewById(R.id.bottom_layout);
-            weatherIcon = (ImageView) myLayout.findViewById(R.id.weather_icon);
-            hiTempLabelTextView = (TextView)myLayout.findViewById(R.id.hi_temp_label);
-            lowTempLabelTextView = (TextView)myLayout.findViewById(R.id.low_temp_label);
-            hiTempTextView = (TextView)myLayout.findViewById(R.id.hi_temp_text_view);
-            lowTempTextView = (TextView)myLayout.findViewById(R.id.low_temp_text_view);
-            humidityTextView = (TextView)myLayout.findViewById(R.id.humidity_text_view);
-
 
             // Recompute the MeasureSpec fields - these determine the actual size of the layout
             specW = View.MeasureSpec.makeMeasureSpec(displaySize.x, View.MeasureSpec.EXACTLY);
@@ -353,7 +343,7 @@ public class WatchFaceService extends CanvasWatchFaceService implements GoogleAp
             String date = mDateFormat.format(mDate);
 
             String day = mCalendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault());
-            String hour = String.valueOf(String.format("%02d",mCalendar.get(Calendar.HOUR_OF_DAY)));
+            String hour = String.valueOf(String.format("%02d", mCalendar.get(Calendar.HOUR_OF_DAY)));
             String minute = String.valueOf(String.format("%02d", mCalendar.get(Calendar.MINUTE)));
             String second = String.valueOf(String.format("%02d", mCalendar.get(Calendar.SECOND)));
 
@@ -363,7 +353,7 @@ public class WatchFaceService extends CanvasWatchFaceService implements GoogleAp
             secondsTextView.setText(second);
             lowTempTextView.setText(lowTemp);
             hiTempTextView.setText(highTemp);
-            humidityTextView.setText(String.format("hum: %s",humidity+"%"));
+            humidityTextView.setText(String.format("hum: %s", humidity + "%"));
             weatherIcon.setImageResource(getIconResourceForWeatherCondition(weatherId));
 
             // Update the layout
@@ -371,7 +361,7 @@ public class WatchFaceService extends CanvasWatchFaceService implements GoogleAp
             myLayout.layout(0, 0, myLayout.getMeasuredWidth(), myLayout.getMeasuredHeight());
 
             // Draw it to the Canvas
-            canvas.translate(mXOffset, mYOffset);
+//            canvas.translate(mXOffset, mYOffset);
             myLayout.draw(canvas);
         }
 

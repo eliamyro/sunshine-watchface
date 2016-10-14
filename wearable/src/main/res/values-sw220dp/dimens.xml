@@ -4,4 +4,8 @@
     <dimen name="hour_min_collon_text_size">58sp</dimen>
     <dimen name="seconds_text_size">28sp</dimen>
     <dimen name="hi_low_title_size">18sp</dimen>
+    <dimen name="general_padding">8dp</dimen>
+    <dimen name="hi_low_temp_text_size">32sp</dimen>
+    <dimen name="bottom_layout_padding_vertical">8dp</dimen>
+    <dimen name="seconds_padding_horizontal">8dp</dimen>
 </resources>
